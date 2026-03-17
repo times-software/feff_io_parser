@@ -47,6 +47,10 @@ def read_feff_xmu(input_file, output_file):
         re.IGNORECASE
     )
 
+    paths_pattern = re.compile(
+        r"paths used"
+    )
+
     vint_pattern = re.compile(r"V[_\s]*int\s*=\s*([-+]?\d*\.?\d+)", re.IGNORECASE)
     rsint_pattern = re.compile(r"Rs[_\s]*int\s*=\s*([-+]?\d*\.?\d+)", re.IGNORECASE)
 
@@ -66,9 +70,9 @@ def read_feff_xmu(input_file, output_file):
                 clean = stripped.lstrip("# ").rstrip()
                 header_lines.append(clean)
 
-                if (m := paths_pattern.search(clean)):
-                    paths_used = int(m.group(1))
-                    paths_total = int(m.group(2))
+                if (paths_pattern.search(clean)):
+                    paths_used = int(clean[0])
+                    paths_total = int(clean.split()[1])
 
                 if (m := version_pattern.search(clean)):
                     feff_version = m.group(1)
@@ -162,3 +166,7 @@ def read_feff_xmu(input_file, output_file):
 
     print(f"JSON written to {output_file}")
 
+
+
+if __name__ == "__main__": 
+    read_feff_xmu('xmu.dat', 'xmu.json')
